@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>时间动态</title>
+	<script src='js/jquery-1.9.1.min.js'></script>
+	<script src='js/echarts.min.js'></script>
+	<script src='js/common.js'></script>
+	<link rel="stylesheet" href="css/common.css">
+	<!-- 引入双日历控件 -->
+	<link rel="stylesheet" type="text/css" href="iconfont/iconfont.css">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/daterangepicker.css">
+	<script src='js/moment.js'></script>
+	<script src='js/daterangepicker.js'></script>
+	<!--引入时间控件-->
+  	<script src="My97DatePicker/WdatePicker.js"></script>
+	<style>
+		html,body{width:100%;height:100%;}
+		.main-content{width:100%;height:100%;padding:10px;box-sizing:border-box;}
+		.chart{width:100%;height:100%;float:left}
+	</style>
+</head>
+<body>
+	<div class="main-content">
+		<div class="chart" id='chart'></div>
+	</div>
+</body>
+<script>
+	$(function(){
+		chart();
+	});
+	
+	function chart(){
+		getJSONPData({
+			url: baseUrl + '/ds/dynamic' + parent.getUrl(parent.getParam()),
+			jsonpCallback: 'setChart'
+		});
+		
+		// example();		
+	}
+	
+	/** 
+	 * @description 设置图形数据
+	 */ 
+	function setChart (data) {		
+		if (data && data.status == 1) {
+
+			var dataArr = data.dynamic || [];
+			var xAxisData = [];
+			for (var i = 0; i < dataArr.length; i++) {
+				xAxisData.push(dataArr[i].time);
+			}
+			
+			var seriesArr = [];
+			var categoryArr = parent.app.categoryList;
+			var legendData = [];
+			for (var i=0; i<categoryArr.length; i++) {
+				var line = {name:categoryArr[i].text, type: 'line', stack: '总量',data:[]};
+				legendData.push(categoryArr[i].text);
+				for (var j = 0; j < dataArr.length; j++) {
+					for (var k = 0; k < dataArr[j].hot.length; k++) {
+						if(categoryArr[i].id == dataArr[j].hot[k].category){
+							line.data.push(dataArr[j].hot[k].number);
+							break;
+						}
+					}
+					
+				}
+				seriesArr.push(line);
+			}
+
+
+	        var myChart = echarts.init(document.getElementById('chart'), 'light');
+			var options = {
+			    tooltip: {
+			        trigger: 'axis'
+			    },
+			    legend: {
+			        data:legendData
+			    },
+			    grid: {
+			    	show: false,
+			        left: '3%',
+			        right: '4%',
+			        bottom: '3%',
+			        containLabel: true
+			    },
+			    toolbox: {
+			        feature: {
+			            saveAsImage: {}
+			        }
+			    },
+			    xAxis: {
+			        type: 'category',
+			        axisLabel:{
+			            rotate: 50
+			        },
+			        splitLine: {
+						show: false
+					}, //去除网格线
+			        data: xAxisData
+			    },
+			    yAxis: {
+			        type: 'value',
+			        splitLine: {
+						show: false
+					}
+			    },
+			    series: seriesArr
+			};
+			myChart.setOption(options);
+		}
+	}
+	
+	/** 
+	 * @description 模拟请求数据
+	 */ 
+	function example () {
+	    
+		var data = {
+			"status": 1,
+			"info": "OK",
+			"dynamic": [
+			    {
+			      "time": "2018-05-11 23:15:00",
+			      "hot": [
+			        {
+			          "cateogry": 1,
+			          "number": 77
+			        },
+			        {
+			          "cateogry": 2,
+			          "number": 99
+			        }
+			      ]
+			    },
+			    {
+			      "time": "2018-05-11 23:30:00",
+			      "hot": [
+			        {
+			          "cateogry": 1,
+			          "number": 91
+			        },
+			        {
+			          "cateogry": 2,
+			          "number": 65
+			        }
+			      ]
+			    },
+			    {
+			      "time": "2018-05-10 08:30:00",
+			      "hot": [
+			        {
+			          "cateogry": 1,
+			          "number": 108
+			        },
+			        {
+			          "cateogry": 2,
+			          "number": 65
+			        }
+			      ]
+			    },
+			    {
+			      "time": "2018-05-12 11:30:00",
+			      "hot": [
+			        {
+			          "cateogry": 1,
+			          "number": 91
+			        },
+			        {
+			          "cateogry": 2,
+			          "number": 200
+			        }
+			      ]
+			    }
+			  ]
+		};
+				
+		setChart(data);		
+	};
+
+</script>
+</html>

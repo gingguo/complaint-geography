@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>tree组织结构图</title>
+	<link rel="stylesheet" href="css/common.css">
+	<script src='js/jquery-1.9.1.min.js'></script>
+	<script src='js/echarts.min.js'></script>
+	<script src='js/common.js'></script>
+	<!-- 引入时间控件 -->
+	<script src='My97DatePicker/WdatePicker.js'></script>
+	<!-- 引入双日历控件 -->
+	<link rel="stylesheet" type="text/css" href="iconfont/iconfont.css">
+	<link rel="stylesheet" href="css/bootstrap.css">
+	<link rel="stylesheet" href="css/daterangepicker.css">
+	<script src='js/moment.js'></script>
+	<script src='js/daterangepicker.js'></script>
+	<style>
+		html,body{width:100%;height:100%;}
+		.main-content{width:100%;height:100%;padding:10px;box-sizing:border-box;}
+		.chart{width:100%;height:100%;float:left;}
+	</style>
+</head>
+<body>
+	<div class="main-content">
+		<div class="chart" id='chart'>
+			最新信息：<br>
+			评论：<input>
+		</div>
+	</div>
+</body>
+<script>
+	
+	var myChart;
+	var options;
+	var series;
+	
+	$(function(){
+		
+		chart();
+	})
+	function chart() {
+		
+		myChart = echarts.init(document.getElementById('chart'));
+		
+		series = {
+            type: 'tree',
+            data: [],
+            top: '1%',
+            left: '7%',
+            bottom: '1%',
+            right: '20%',
+            symbolSize: 7,
+            label: {
+                normal: {
+                    position: 'left',
+                    verticalAlign: 'middle',
+                    align: 'right',
+                    fontSize: 9
+                }
+            },
+            leaves: {
+                label: {
+                    normal: {
+                        position: 'right',
+                        verticalAlign: 'middle',
+                        align: 'left'
+                    }
+                }
+            },
+            expandAndCollapse: true,
+            animationDuration: 550,
+            animationDurationUpdate: 750
+        };
+        
+		options = {
+		    tooltip: {
+		        trigger: 'item',
+		        triggerOn: 'mousemove'
+		    },
+		    series: [
+		        series
+		    ]
+		};
+		myChart.setOption(options);
+		
+		var queryParam = GetQueryParams();
+		
+		var param = parent.getParam();
+		param.type = 0;
+		queryParam.keyword && (param.keyword = queryParam.keyword);
+		getJSONPData({
+			url: baseUrl + '/ds/unit' + parent.getUrl(param),
+			jsonpCallback: 'setChart'
+		});
+		
+		// example();	
+	}
+	;
+	
+	/** 
+	 * @description 设置图形数据 
+	 */ 
+	function setChart (data) {
+	    
+	    if(data && data.status == 1) {
+	    	
+	    	var dataOpt = data.unit || [], dataArr = [];
+	    	var opt = $.extend(true, {}, series);
+	    	for (var i = 0; i < dataOpt.length; i++) {
+	    		var obj = dataOpt[i];
+	    		var category = parent.getCategory(obj.cdata[0].category); // obj.cdata[0].words
+	    		var keys = obj.cdata[0].words;
+	    		for(var j = 0; j < keys.length; j++ ) {
+	    			keys[j] = {name: keys[j], value: obj.cdata[0].number};
+	    		}
+	    		var treeData = { name: obj.name, children: [{name: category, children: keys}] };
+	    		dataArr.push(treeData);
+	    	}
+	    	$.extend(opt, {data:[{name: ' ', children: dataArr}]});
+	    	$.extend(options, {series: [opt]});
+    		myChart.setOption(options);
+	    }
+	}
+	;
+	
+	/** 
+	 * @description 模拟请求数据 
+	 */ 
+	function example () {
+		
+	    var data = {
+			"status": 1,
+			"info": "OK",
+			"unit": [
+			    {
+			      "name": "习近平",
+			      "cdata": [
+			        {
+			          "category": 3,
+			          "number": 5,
+			          "words": ["打老虎", "反着拿斧头", "大刀阔斧"]
+			        }
+			      ]
+			    },
+			    {
+			      "name": "李克强",
+			      "cdata": [
+			        {
+			          "category": 3,
+			          "number": 18,
+			          "words": ["总理", "出国"]
+			        }
+			      ]
+			    }
+			]
+		};
+		
+		setChart(data);
+	}
+	;
+
+</script>
+</html>

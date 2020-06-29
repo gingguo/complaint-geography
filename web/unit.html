@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<link rel="stylesheet" href="css/common.css">
+  <script src='js/jquery-1.9.1.min.js'></script>
+  <script src='js/common.js'></script>
+	<style>
+		.main-content{width:100%;padding:10px;box-sizing:border-box;float:left;}
+	</style>
+</head>
+<body>
+	<div class="main-content">
+		<div class="m_table">
+			<table id="table">
+			</table>
+		</div>
+	</div>
+</body>
+<script type="text/javascript">
+	
+	$(function() {
+		initTable();
+	})
+	;
+	
+	/** 
+	 * @description 初始化表格数据
+	 */ 
+	function initTable () {
+	    
+	    
+	    var param = parent.getParam();
+	    param.type = 1;
+	    getJSONPData({
+			url: baseUrl + '/ds/unit' + parent.getUrl(param),
+			jsonpCallback: 'setTabData'
+		});
+		
+		// example();
+	}
+	;
+	
+	/** 
+	 * @description 设置表格数据
+	 */ 
+	function setTabData (data) {
+	    
+	    if (data && data.status == 1) {
+	    	
+	    	var dataOpt = data.unit || [];
+	    	var tempTab = '<tr><td>人名</td><td>舆情分类</td><td>舆情数量</td><td>舆情特征词</td></tr>';
+	    	for (var i = 0; i < dataOpt.length; i++) {
+	    		
+	    		var obj = dataOpt[i];
+	    		var hot = obj.cdata;
+	    		for (var j = 0; j < hot.length; j++) {
+	    			var child = hot[j];
+	    			tempTab += '<tr><td>' + obj.name + '</td><td>' + parent.getCategory(child.category) + 
+	    					'</td><td>' + child.number + '</td><td>' + child.words.join(",") + '</td></tr>';
+	    		}
+	    	}
+	    	$('#table').html(tempTab);
+	    }
+	}
+	
+	/** 
+	 * @description 模拟请求数据 
+	 */ 
+	function example () {
+		
+	    var data = {
+			"status": 1,
+			"info": "OK",
+			"unit": [
+			    {
+			      "name": "习近平",
+			      "cdata": [
+			        {
+			          "category": 3,
+			          "number": 5,
+			          "words": ["打老虎", "反着拿斧头", "大刀阔斧"]
+			        }
+			      ]
+			    },
+			    {
+			      "name": "李克强",
+			      "cdata": [
+			        {
+			          "category": 3,
+			          "number": 18,
+			          "words": ["总理", "出国"]
+			        }
+			      ]
+			    }
+			]
+		};
+		
+		setTabData(data);
+	}
+	;
+	
+</script>
+</html>
