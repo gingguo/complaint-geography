@@ -1,7 +1,15 @@
 # yuqing
 投诉信息舆情
 Web端为本系统主要的功能平台，是舆情地理可视化的重要展现方式。实现了以下功能：
+Public opinion geography can be the main functional platform of the web-based system, and it is an important display method of public opinion geography visualization. The following functions are implemented:
 
+Classification: geographical classification, real-time public opinion, latest alarm content, public opinion classification, time period selection Visualization items: heat map display, bubble chart display, time dynamic map display, area boundary display, bar chart display, pie chart display
+
+The main purpose of the geographic visualization of public opinion in this system is to display the public opinion information on the map in the form of a heat map. Users can control the changes of the heat map by selecting the above categories. A darker area indicates a higher number of comments in that area over a certain period of time. The heatmap can be displayed by clicking on the first icon in the bottom black bar.
+
+The visualization of the system is also reflected in the bubble chart that conforms to the trend of the times. Through background analysis, some words with high frequency appear in the form of bubble charts through the bubble chart template.
+
+The system organizes the real-time dynamics (every 45s) and displays it with a time dynamic graph: the number of citizen comments in each category.
 <img width="612" alt="image" src="https://user-images.githubusercontent.com/29689915/166726580-d306455c-25d9-4783-92b6-730f63dc2a6c.png">
 
 分类：
